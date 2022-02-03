@@ -3,6 +3,7 @@ package com.johncode.fundamentos.springboot.app;
 import com.johncode.fundamentos.springboot.app.bean.MathOperations;
 import com.johncode.fundamentos.springboot.app.bean.MyBean;
 import com.johncode.fundamentos.springboot.app.bean.MyBeanWithDependency;
+import com.johncode.fundamentos.springboot.app.bean.MyBeanWithProperties;
 import com.johncode.fundamentos.springboot.app.component.ComponentDependency;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
@@ -16,15 +17,18 @@ public class FundamentosApplication implements CommandLineRunner {
     private MyBean myBean;
     private MyBeanWithDependency myBeanWithDependency;
     private MathOperations mathOperations;
+    private MyBeanWithProperties myBeanWithProperties;
 
     public FundamentosApplication(@Qualifier("componentTwoImplement") ComponentDependency componentDependency,
                                   MyBean myBean,
                                   MyBeanWithDependency myBeanWithDependency,
-                                  MathOperations mathOperations) {
+                                  MathOperations mathOperations,
+                                  MyBeanWithProperties myBeanWithProperties) {
         this.componentDependency = componentDependency;
         this.myBean = myBean;
         this.myBeanWithDependency = myBeanWithDependency;
         this.mathOperations = mathOperations;
+        this.myBeanWithProperties = myBeanWithProperties;
     }
 
     public static void main(String[] args) {
@@ -37,5 +41,7 @@ public class FundamentosApplication implements CommandLineRunner {
         myBean.print();
         myBeanWithDependency.printWithDependency();
         System.out.println(mathOperations.substract(10D, 5D));
+        String fullname = myBeanWithProperties.printFullName();
+        System.out.println(fullname);
     }
 }
