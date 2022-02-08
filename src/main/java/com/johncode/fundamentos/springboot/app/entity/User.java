@@ -39,6 +39,12 @@ public class User {
         this.posts = posts;
     }
 
+    public User(String name, String email, LocalDate birthdate) {
+        this.name = name;
+        this.email = email;
+        this.birthdate = birthdate;
+    }
+
     public long getId() {
         return id;
     }
