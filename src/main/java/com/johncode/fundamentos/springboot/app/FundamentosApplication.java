@@ -8,6 +8,7 @@ import com.johncode.fundamentos.springboot.app.component.ComponentDependency;
 import com.johncode.fundamentos.springboot.app.entity.User;
 import com.johncode.fundamentos.springboot.app.pojo.UserPojo;
 import com.johncode.fundamentos.springboot.app.repository.UserRepository;
+import com.johncode.fundamentos.springboot.app.service.UserService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -31,6 +32,7 @@ public class FundamentosApplication implements CommandLineRunner {
     private MyBeanWithProperties myBeanWithProperties;
     private UserPojo userPojo;
     private UserRepository userRepository;
+    private UserService userService;
 
     public FundamentosApplication(@Qualifier("componentTwoImplement") ComponentDependency componentDependency,
                                   MyBean myBean,
@@ -38,7 +40,8 @@ public class FundamentosApplication implements CommandLineRunner {
                                   MathOperations mathOperations,
                                   MyBeanWithProperties myBeanWithProperties,
                                   UserPojo userPojo,
-                                  UserRepository userRepository
+                                  UserRepository userRepository,
+                                  UserService userService
     ) {
         this.componentDependency = componentDependency;
         this.myBean = myBean;
@@ -47,6 +50,7 @@ public class FundamentosApplication implements CommandLineRunner {
         this.myBeanWithProperties = myBeanWithProperties;
         this.userPojo = userPojo;
         this.userRepository = userRepository;
+        this.userService = userService;
     }
 
     public static void main(String[] args) {
@@ -57,7 +61,8 @@ public class FundamentosApplication implements CommandLineRunner {
     public void run(String... args) throws Exception {
         //previousCode();
         saveUsersInDB();
-        getInformationJpqlFromUser();
+        //getInformationJpqlFromUser();
+        saveWithErrorTransactional();
     }
 
     private void previousCode() {
@@ -80,7 +85,7 @@ public class FundamentosApplication implements CommandLineRunner {
         User john = new User("John", "john@domain.com", LocalDate.of(1996,01,31));
         User jane = new User("Jane", "jane@domain.com", LocalDate.of(1996,02,01));
         User jose = new User("Jose", "jose@domail.com", LocalDate.of(1996,03,01));
-        User joseph = new User("Jose", "jose@domail.com", LocalDate.of(1996,04,01));
+        User joseph = new User("Jose", "joseph@domail.com", LocalDate.of(1996,04,01));
         User josephine = new User("Josephine", "josephine@gmail.com", LocalDate.of(1996,05,01));
         User nohelia = new User("Nohelia", "nohelia@gmail.com", LocalDate.of(1996,06,01));
 
@@ -127,6 +132,26 @@ public class FundamentosApplication implements CommandLineRunner {
         userRepository.getAllByBirthdateAndEmail(LocalDate.of(1996,01,31), "john@domain.com")
                 .ifPresentOrElse(user -> LOGGER.info("User with method userRepository.getAllByBirthdateAndEmail" + user.toString())
                         , () -> LOGGER.info("No user found"));
+
+    }
+
+    private void saveWithErrorTransactional() {
+        User Jose = new User("JoseTransactional", "joseTransact@domail.com", LocalDate.of(1996, 03, 01));
+        User john = new User("JohnTransactional", "johnTransactional@domain.com", LocalDate.of(1996,01,31));
+        User jane = new User("JaneTransactional", "joseTransact@domail.com", LocalDate.of(1996,02,01));
+        User joseph = new User("JoseTransactional", "joseTransactional@domail.com", LocalDate.of(1996,04,01));
+
+        List<User> users = List.of(Jose, john, jane, joseph);
+
+        try {
+            userService.saveTransactional(users);
+        }catch (Exception e){
+            LOGGER.error("Error al guardar usuarios", e);
+        }
+
+        userService.getAllUsers()
+                .stream()
+                .forEach(user -> LOGGER.info("User with method userService.getAllUsers()" + user.toString()));
 
     }
 }
