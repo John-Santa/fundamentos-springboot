@@ -37,4 +37,31 @@ public class UserService {
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
+
+    public User save(User user) {
+        return userRepository.save(user);
+    }
+
+    public void delete(Long id) {
+        userRepository.deleteById(id);
+    }
+
+    public User findById(Long id) {
+        return userRepository.findById(id).orElse(null);
+    }
+
+    public User getUserById(Long id) {
+        return userRepository.findById(id).orElse(null);
+    }
+
+    public User update(User user, Long id) {
+       return userRepository
+                .findById(id)
+                .map(u -> {
+                    u.setName(user.getName());
+                    u.setEmail(user.getEmail());
+                    u.setBirthdate(user.getBirthdate());
+                    return userRepository.save(u);
+                }).get();
+    }
 }

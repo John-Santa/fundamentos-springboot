@@ -62,7 +62,7 @@ public class FundamentosApplication implements CommandLineRunner {
         //previousCode();
         saveUsersInDB();
         //getInformationJpqlFromUser();
-        saveWithErrorTransactional();
+        //saveWithErrorTransactional();
     }
 
     private void previousCode() {
