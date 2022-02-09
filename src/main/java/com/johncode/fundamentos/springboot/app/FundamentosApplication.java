@@ -22,7 +22,7 @@ import java.util.List;
 @SpringBootApplication
 public class FundamentosApplication implements CommandLineRunner {
 
-    private Log LOGGER = LogFactory.getLog(FundamentosApplication.class);
+    private static final Log LOGGER = LogFactory.getLog(FundamentosApplication.class);
 
     private ComponentDependency componentDependency;
     private MyBean myBean;
@@ -64,10 +64,10 @@ public class FundamentosApplication implements CommandLineRunner {
         componentDependency.greet();
         myBean.print();
         myBeanWithDependency.printWithDependency();
-        System.out.println(mathOperations.substract(10D, 5D));
+        LOGGER.info(mathOperations.substract(10D, 5D));
         String fullname = myBeanWithProperties.printFullName();
-        System.out.println(fullname);
-        System.out.println(userPojo.getEmail());
+        LOGGER.info(fullname);
+        LOGGER.info(userPojo.getEmail());
         try {
             int value = 10 / 0;
             LOGGER.debug("Value: " + value);
@@ -80,7 +80,7 @@ public class FundamentosApplication implements CommandLineRunner {
         User john = new User("John", "john@domain.com", LocalDate.of(1996,01,31));
         User jane = new User("Jane", "jane@domain.com", LocalDate.of(1996,02,01));
         User jose = new User("Jose", "jose@domail.com", LocalDate.of(1996,03,01));
-        User joseph = new User("Joseph", "joseph@gmail.com", LocalDate.of(1996,04,01));
+        User joseph = new User("Jose", "jose@domail.com", LocalDate.of(1996,04,01));
         User josephine = new User("Josephine", "josephine@gmail.com", LocalDate.of(1996,05,01));
         User nohelia = new User("Nohelia", "nohelia@gmail.com", LocalDate.of(1996,06,01));
 
@@ -95,5 +95,38 @@ public class FundamentosApplication implements CommandLineRunner {
         userRepository.findAndSortByName("Jo", Sort.by("id").descending())
                 .stream()
                 .forEach(user -> LOGGER.info("User with method userRepository.findAndSortByName(Jo, Sort.by(\"id\").descending())" + user.toString()));
+
+        userRepository.findByNameAndEmail("Jose", "jose@domail.com")
+                .stream()
+                .forEach(user -> LOGGER.info("User with method userRepository.findByNameAndEmail(\"Jose\")" + user.toString()));
+
+        userRepository.findByNameEndingWith("n")
+                .stream()
+                .findFirst()
+                .ifPresentOrElse(
+                        user -> LOGGER.info("User with method userRepository.findByNameEndingWith(\"n\")" + user.toString())
+                        , () -> LOGGER.info("No user found")
+                );
+
+        userRepository.findByNameLike("%o%")
+                .stream()
+                .forEach(user -> LOGGER.info("User with method userRepository.findByNameLike(\"%o%\")" + user.toString()));
+
+        userRepository.findByNameOrEmail("Jose", "john@domain.com")
+                .stream()
+                .forEach(user -> LOGGER.info("User with method userRepository.findByNameOrEmail(\"Jose\", \"john@domain.com\")" + user.toString()));
+
+        userRepository.findByBirthdateBetween(LocalDate.of(1996,01,01), LocalDate.of(1996,12,31))
+                .stream()
+                .forEach(user -> LOGGER.info("User with method userRepository.findByBirthdateBetween(LocalDate.of(1996,01,01), LocalDate.of(1996,12,31))" + user.toString()));
+
+        userRepository.findByNameOrderByIdDesc("Jose")
+                .stream()
+                .forEach(user -> LOGGER.info("User with method userRepository.findByNameOrderByIdDesc(\"Jose\")" + user.toString()));
+
+        userRepository.getAllByBirthdateAndEmail(LocalDate.of(1996,01,31), "john@domain.com")
+                .ifPresentOrElse(user -> LOGGER.info("User with method userRepository.getAllByBirthdateAndEmail" + user.toString())
+                        , () -> LOGGER.info("No user found"));
+
     }
 }
